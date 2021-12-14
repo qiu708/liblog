@@ -1,0 +1,6 @@
+add_executable(logTest logTest.cpp)
+target_link_libraries(logTest liblog pthread)
+add_executable(removeInvalidtest removeInvalidtest.cpp)
+target_link_libraries(removeInvalidtest liblog pthread)
+add_executable(removeInvalidlogfiletest removeInvalidlogfiletest.cpp)
+target_link_libraries(removeInvalidlogfiletest liblog pthread)
