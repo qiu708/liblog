@@ -115,7 +115,7 @@ namespace liblog{
          liblog::Logger(__FILE__,__LINE__).stream()
 
 
-#define LOG_WARM liblog::Logger(__FILE__,__LINE__,liblog::Logger::WARN).stream()
+#define LOG_WARN liblog::Logger(__FILE__,__LINE__,liblog::Logger::WARN).stream()
 
 #define LOG_ERROR liblog::Logger(__FILE__,__LINE__,liblog::Logger::ERROR).stream()
 

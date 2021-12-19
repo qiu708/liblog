@@ -10,6 +10,15 @@
 #include"AsyncLogging.h"
 using namespace liblog;
 
+const char* LogLevelName[6] =
+        {
+                "\033[32mTRACE ",
+                "\033[34mDEBUG ",
+                "\033[36mINFO  ",
+                "\033[33mWARN  ",
+                "\033[31mERROR ",
+                "\033[31mFATAL ",
+        };
     Logger::LogLevel initLogLevel()
     {
         return Logger::TRACE;
@@ -69,18 +78,22 @@ using namespace liblog;
     Logger::Impl::Impl(Logger::LogLevel level, int old_errno, const Logger::SourceFile &file, int line):time_(Timestamp::now()),level_(level),
                                                                                                         basename_(file),line_(line),
                                                                                                         stream_(){
+        stream_<<"\033[0m";
         formatTime();
         std::string s = std::to_string((::syscall(SYS_gettid)));
         s += " ";
         stream_ << T(s.c_str(), s.size());
+        stream_<<LogLevelName[level];
+//        stream_<<"old errno"<<old_errno<<"errno"<<errno;
         if (old_errno != 0)
         {
-            stream_ << " (errno=" << old_errno << ") ";
+
+            stream_ << " (errno=" << old_errno << ") , ErrorMessage:"<< strerror(old_errno)<<" ";
         }
     }
     void Logger::Impl::finish()
     {
-        stream_ << " - "<< basename_.data_<< ':'<< line_ << '\n';
+        stream_ << " - "<< basename_.data_<< ':'<< line_ << "\033[0m"<<'\n';
     }
 
     void Logger::Impl::formatTime() {
@@ -100,7 +113,7 @@ using namespace liblog;
     }
 
     Logger::Logger(SourceFile file, int line, LogLevel level)
-            : impl_(level, 0, file, line)
+            : impl_(level, errno, file, line)
     {
     };
 
@@ -112,6 +125,11 @@ using namespace liblog;
     {
         impl_.finish();
         g_output(this->impl_.stream_.buffer().data(), this->impl_.stream_.buffer().bufferlength());
+        if(impl_.level_==LogLevel::FATAL)
+        {
+            g_flush();
+            abort();
+        }
     }
     void Logger::setOutput(OutputFunc out)
     {

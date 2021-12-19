@@ -4,14 +4,19 @@
 
 #ifndef LIBLOG_NONCOPYABLE_H
 #define LIBLOG_NONCOPYABLE_H
+namespace liblog{
+class noncopyable {
+public:
+    noncopyable() = default;
 
-    class noncopyable {
-    public:
-        noncopyable()=default;
-        ~noncopyable()=default;
-    private:
-        noncopyable(const noncopyable&) = delete;
-        void operator=(const noncopyable&) = delete;
-    };
+    ~noncopyable() = default;
+
+private:
+    noncopyable(const noncopyable &) = delete;
+
+    void operator=(const noncopyable &) = delete;
+};
+
+}
 
 #endif
