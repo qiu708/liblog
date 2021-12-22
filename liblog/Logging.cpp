@@ -8,6 +8,8 @@
 #include <zconf.h>
 #include <unistd.h>
 #include"AsyncLogging.h"
+#include<liblog/LogConfig.h>
+#include <liblog/AsyncLogPool.h>
 using namespace liblog;
 
 const char* LogLevelName[6] =
@@ -24,31 +26,7 @@ const char* LogLevelName[6] =
         return Logger::TRACE;
     }
     Logger::LogLevel liblog::g_loglevel=initLogLevel();
-    void defaultOutput(const char *msg, int len)//默认是标准输出．
-    {
-        size_t n = fwrite(msg, 1, len, stdout);
-    }
 
-    void defaultFlush()
-    {
-        fflush(stdout);
-    }
-    void liblog::asyncoutput(const char *msg, int len)
-    {
-//        std::cout<<"---asynclog---"<<msg<<std::endl;
-        AsyncLogging::getinstance().append(msg,len);
-    }
-    void liblog::asyncflush()
-    {
-
-    }
-
-
-    Logger::FlushFunc g_flush=defaultFlush;
-    Logger::OutputFunc  g_output=defaultOutput;
-
-//    Logger::FlushFunc g_flush=asyncflush;
-//    Logger::OutputFunc  g_output=asyncoutput;
 
     void Logger::setLogLevel(Logger::LogLevel level) {
         g_loglevel=level;
@@ -75,9 +53,9 @@ const char* LogLevelName[6] =
         return s;
     }
 
-    Logger::Impl::Impl(Logger::LogLevel level, int old_errno, const Logger::SourceFile &file, int line):time_(Timestamp::now()),level_(level),
+    Logger::Impl::Impl(Logger::LogLevel level, int old_errno, const Logger::SourceFile &file, int line,const std::string& name):time_(Timestamp::now()),level_(level),
                                                                                                         basename_(file),line_(line),
-                                                                                                        stream_(){
+                                                                                                        stream_(),name_(name){
         stream_<<"\033[0m";
         formatTime();
         std::string s = std::to_string((::syscall(SYS_gettid)));
@@ -100,46 +78,53 @@ const char* LogLevelName[6] =
         this->stream_<<Timestamp::now().toformattedString()<<" ";
     }
 
-    Logger::Logger(SourceFile file, int line): impl_(INFO, 0, file, line)
+    Logger::Logger(SourceFile file, int line,const char*  name): impl_(INFO, 0, file, line,name)
     {
     }
 
     //Logger(SourceFile file, int line, LogLevel level, const char *func);
 
-    Logger::Logger (SourceFile  file, int line, LogLevel level, const char *func)
-            : impl_(level, 0, file, line)
+    Logger::Logger (SourceFile  file, int line, const char *func,LogLevel level,const char* name)
+            : impl_(level, 0, file, line,name)
     {
         impl_.stream_ << func << ' ';
     }
 
-    Logger::Logger(SourceFile file, int line, LogLevel level)
-            : impl_(level, errno, file, line)
+    Logger::Logger(SourceFile file, int line, LogLevel level,const char* name)
+            : impl_(level, errno, file, line,name)
     {
     };
 
-    Logger::Logger(SourceFile file, int line, bool toAbort)
-            : impl_(toAbort ? FATAL : ERROR, errno, file, line)
+    Logger::Logger(SourceFile file, int line, bool toAbort,const char* name)
+            : impl_(toAbort ? FATAL : ERROR, errno, file, line,name)
     {}
 
     Logger::~Logger()
     {
         impl_.finish();
-        g_output(this->impl_.stream_.buffer().data(), this->impl_.stream_.buffer().bufferlength());
-        if(impl_.level_==LogLevel::FATAL)
+        if(LogConfig::Map()[impl_.name_].toFile)
         {
-            g_flush();
-            abort();
+            if(LogConfig::Map()[impl_.name_].async)
+            {
+                AsyncLogPool::getInstance(impl_.name_).append(this->impl_.stream_.buffer().data(), this->impl_.stream_.buffer().bufferlength());
+            }
+            if(impl_.level_==LogLevel::FATAL)
+            {
+                fflush(stdout);
+                abort();
+            }
+        }else
+        {
+            fwrite(this->impl_.stream_.buffer().data(), 1, this->impl_.stream_.buffer().bufferlength(), stdout);
+            if(impl_.level_==LogLevel::FATAL)
+            {
+                fflush(stdout);
+                abort();
+            }
         }
-    }
-    void Logger::setOutput(OutputFunc out)
-    {
-        g_output = out;
+
     }
 
-    void Logger::setFlush(FlushFunc flush)
-    {
-        g_flush = flush;
-    }
 
 
 

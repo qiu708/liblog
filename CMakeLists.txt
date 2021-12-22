@@ -7,7 +7,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/build_bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/build_lib)
 
-#include_directories(${PROJECT_BINARY_DIR})
-include_directories(${PROJECT_SOURCE_DIR})
-
+#include_directories()
+include_directories(${PROJECT_SOURCE_DIR}
+        ${PROJECT_BINARY_DIR}
+        lib/libconfig
+        )
+add_subdirectory(lib/libconfig)
 add_subdirectory(liblog)

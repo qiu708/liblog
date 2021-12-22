@@ -7,6 +7,7 @@
 #include"Timestamp.h"
 #include <memory>
 #include<unistd.h>
+#include <liblog/LogConfig.h>
 using namespace liblog;
 AsyncLogging::AsyncLogging(const std::string &basename, size_t rollSize, int flushInterval)
         :basename_(basename),
@@ -148,3 +149,6 @@ void AsyncLogging::setLogfiletimeout(time_t logfiletimeout) {
 void AsyncLogging::setLogCheckInterval(time_t logCheckInterval) {
     AsyncLogging::logCheckInterval = logCheckInterval;
 }
+
+
+

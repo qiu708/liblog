@@ -13,6 +13,8 @@
 #include<thread>
 #include<mutex>
 #include<condition_variable>
+#include <unordered_map>
+
 /*
  * 使用了两个vector AB保存缓冲区
  *
@@ -33,8 +35,9 @@
  * 循环
  * */
 namespace liblog{
+    struct LogSetting;
     class AsyncLogging:noncopyable{
-    private:
+    public:
         AsyncLogging(const std::string& basename,size_t rollSize,int flushInterval=1);
         ~AsyncLogging()
         {
@@ -51,12 +54,6 @@ namespace liblog{
         {
             isrunning=false;
             threadptr->join();
-        }
-        static AsyncLogging& getinstance()
-        {
-            static AsyncLogging instance("./log",640000);
-//            std::cout<<"getinstamnce"<<std::endl;
-            return instance;
         }
 
     private:

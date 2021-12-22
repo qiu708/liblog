@@ -1,0 +1,3 @@
+[submodule "lib/libconfig"]
+	path = lib/libconfig
+	url = git@github.com:qiu708/libconfig.git

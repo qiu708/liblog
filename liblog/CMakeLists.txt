@@ -13,6 +13,8 @@ set(SOURCE_FILES
         LogStream.cpp
         StringPiece.h
         noncopyable.h
+        LogConfig.cpp
+        AsyncLogPool.h
         )
 
 add_library(liblog STATIC ${SOURCE_FILES})
@@ -20,17 +22,8 @@ target_link_libraries(liblog pthread rt)
 
 install(TARGETS liblog DESTINATION lib)
 
-#file(GLOB HEADERS "*.h")
-set(HEADERS
-        AsyncLogging.h
-        LogFile.h
-        Logging.h
-        Timestamp.h
-        FileUtil.h
-        LogStream.h
-        StringPiece.h
-        noncopyable.h
-        )
+file(GLOB HEADERS "*.h")
+
 
 #message(STATUS "glob headers ${HEADERS}|headers ${HEADERS2}")
 install(FILES ${HEADERS} DESTINATION include/liblog)
