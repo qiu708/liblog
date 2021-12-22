@@ -73,7 +73,7 @@ void LogFile::append(const char *logline, int len) {
 void LogFile::append_unlocked(const char *logline, int len) {
     file_->append(logline,len);
     if(file_->writtenBytes()>rollsize_) {
-        std::cout<<"roll due to filesize,filesize:"<<file_->writtenBytes()<<std::endl;
+//        std::cout<<"roll due to filesize,filesize:"<<file_->writtenBytes()<<std::endl;
         rollFile();
     }
     else
@@ -84,15 +84,15 @@ void LogFile::append_unlocked(const char *logline, int len) {
             count_=0;
             time_t now=::time(NULL);
             time_t thisPeriod_=now/kRollPerSeconds_*kRollPerSeconds_;
-            std::cout<<"thisperiod"<<thisPeriod_<<" now:"<<now<<" lastflush:"<<lastFlush_<<std::endl;
+//            std::cout<<"thisperiod"<<thisPeriod_<<" now:"<<now<<" lastflush:"<<lastFlush_<<std::endl;
             if(thisPeriod_!=startOfPeriod_)
             {
-                std::cout<<"roll due to period"<<std::endl;
+//                std::cout<<"roll due to period"<<std::endl;
                 rollFile();
             }
             else if(now-lastFlush_ >= flushInterval_)
             {
-                std::cout<<"flush due to flushinterval"<<std::endl;
+//                std::cout<<"flush due to flushinterval"<<std::endl;
                 lastFlush_=now;
                 file_->flush();
             }
