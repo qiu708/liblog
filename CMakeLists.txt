@@ -12,5 +12,7 @@ include_directories(${PROJECT_SOURCE_DIR}
         ${PROJECT_BINARY_DIR}
         lib/libconfig
         )
-add_subdirectory(lib/libconfig)
+if(NOT TARGET libconfig)
+    add_subdirectory(lib/libconfig)
+endif()
 add_subdirectory(liblog)
