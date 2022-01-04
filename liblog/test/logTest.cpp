@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <fstream>
 #include <filesystem>
+#include <liblog/Log.h>
 namespace fs = std::filesystem;
 using namespace std::chrono_literals;
 int main()

@@ -2,10 +2,7 @@
 // Created by qiu on 2021/12/21.
 //
 
-#include <liblog/LogConfig.h>
-#include <liblog/Logging.h>
-#include <liblog/AsyncLogging.h>
-#include <liblog/AsyncLogPool.h>
+#include <liblog/Log.h>
 #include <thread>
 #include <chrono>
 #include<iostream>

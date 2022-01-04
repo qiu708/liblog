@@ -25,12 +25,9 @@ const char* LogLevelName[6] =
     {
         return Logger::TRACE;
     }
-    Logger::LogLevel liblog::g_loglevel=initLogLevel();
 
 
-    void Logger::setLogLevel(Logger::LogLevel level) {
-        g_loglevel=level;
-    }
+
 
     class T {
     public:

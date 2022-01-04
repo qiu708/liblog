@@ -15,6 +15,7 @@ set(SOURCE_FILES
         noncopyable.h
         LogConfig.cpp
         AsyncLogPool.h
+        Log.h
         )
 
 add_library(liblog STATIC ${SOURCE_FILES})
